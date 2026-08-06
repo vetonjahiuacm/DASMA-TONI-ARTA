@@ -1,19 +1,20 @@
 import React, { useState } from "react";
-import { addRsvp } from "../mock";
+import { submitRsvp } from "../api";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import { Check, X, Heart } from "lucide-react";
+import { Check, X, Heart, Loader2 } from "lucide-react";
 
-const RsvpForm = () => {
+const RsvpForm = ({ onSubmitted }) => {
   const [name, setName] = useState("");
   const [attending, setAttending] = useState(null); // 'yes' | 'no'
   const [guests, setGuests] = useState(1);
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
       toast.error("Ju lutemi shkruani emrin tuaj");
@@ -23,14 +24,22 @@ const RsvpForm = () => {
       toast.error("Ju lutemi zgjidhni nëse do të vini");
       return;
     }
-    addRsvp({
-      name: name.trim(),
-      attending,
-      guests: attending === "yes" ? Number(guests) : 0,
-      message: message.trim(),
-    });
-    setSubmitted(true);
-    toast.success("Faleminderit! Konfirmimi u regjistrua.");
+    setLoading(true);
+    try {
+      const res = await submitRsvp({
+        name: name.trim(),
+        attending,
+        guests: attending === "yes" ? Number(guests) : 0,
+        message: message.trim(),
+      });
+      setSubmitted(true);
+      toast.success("Faleminderit! Konfirmimi u regjistrua.");
+      if (onSubmitted) onSubmitted(res.seats);
+    } catch (err) {
+      toast.error("Diçka shkoi keq. Ju lutemi provoni sërish.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -113,9 +122,16 @@ const RsvpForm = () => {
 
       <button
         type="submit"
-        className="w-full py-4 rounded-sm bg-[#2b2724] text-white font-sans-el text-[11px] tracking-[0.3em] uppercase hover:bg-[#b09a6b] transition-colors duration-300"
+        disabled={loading}
+        className="w-full py-4 rounded-sm bg-[#2b2724] text-white font-sans-el text-[11px] tracking-[0.3em] uppercase hover:bg-[#b09a6b] transition-colors duration-300 disabled:opacity-70 flex items-center justify-center gap-2"
       >
-        Dërgo Konfirmimin
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" /> Duke dërguar...
+          </>
+        ) : (
+          "Dërgo Konfirmimin"
+        )}
       </button>
     </form>
   );

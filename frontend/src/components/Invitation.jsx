@@ -1,12 +1,29 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { MapPin, Clock, CalendarDays } from "lucide-react";
 import { eventData } from "../mock";
+import { fetchSeats } from "../api";
 import Countdown from "./Countdown";
 import RsvpForm from "./RsvpForm";
 import Gallery from "./Gallery";
+import SeatCounter from "./SeatCounter";
 import { FloralDivider, Sprig, Petals } from "./Ornaments";
 
 const Invitation = () => {
+  const [seats, setSeats] = useState(null);
+
+  const loadSeats = useCallback(async () => {
+    try {
+      const data = await fetchSeats();
+      setSeats(data);
+    } catch (e) {
+      // silent
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSeats();
+  }, [loadSeats]);
+
   return (
     <div className="w-full soft-in relative">
       <Petals count={14} />
@@ -41,12 +58,15 @@ const Invitation = () => {
       {/* PHOTO GALLERY */}
       <Gallery />
 
-      {/* COUNTDOWN */}
+      {/* COUNTDOWN + SEATS */}
       <section className="py-16 px-6">
         <p className="text-center font-sans-el text-[11px] tracking-wide-lux uppercase text-[#8a8175] mb-8">
           Numratori deri në ditën e madhe
         </p>
         <Countdown />
+        <div className="mt-14">
+          <SeatCounter seats={seats} />
+        </div>
       </section>
 
       {/* DETAILS */}
@@ -117,7 +137,7 @@ const Invitation = () => {
         <p className="text-center font-serif-el italic text-[#8a8175] mb-10">
           Ju lutemi na bëni të ditur nese do të jeni pranë nesh
         </p>
-        <RsvpForm />
+        <RsvpForm onSubmitted={(s) => setSeats(s)} />
       </section>
 
       {/* FOOTER */}
