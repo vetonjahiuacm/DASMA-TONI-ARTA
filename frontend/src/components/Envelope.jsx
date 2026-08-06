@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { eventData } from "../mock";
 import { Petals, Sprig } from "./Ornaments";
+import ambientMusic from "../audioEngine";
 
 const Envelope = ({ onOpen }) => {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
     if (open) return;
+    // start music synchronously within the click gesture (autoplay policy)
+    ambientMusic.start();
     setOpen(true);
     setTimeout(() => onOpen && onOpen(), 1650);
   };

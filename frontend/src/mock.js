@@ -47,3 +47,52 @@ export const addRsvp = (data) => {
 };
 
 export const clearRsvps = () => localStorage.removeItem(STORAGE_KEY);
+
+/* ---------- Photo gallery (frontend-only, stored as compressed base64) ---------- */
+const PHOTOS_KEY = "va_gallery_photos";
+
+export const getPhotos = () => {
+  try {
+    return JSON.parse(localStorage.getItem(PHOTOS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+};
+
+export const savePhotos = (photos) =>
+  localStorage.setItem(PHOTOS_KEY, JSON.stringify(photos));
+
+export const removePhoto = (id) => {
+  const next = getPhotos().filter((p) => p.id !== id);
+  savePhotos(next);
+  return next;
+};
+
+// Compress an uploaded image file to a small base64 JPEG (keeps localStorage light)
+export const compressImage = (file, maxSize = 1200, quality = 0.8) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > maxSize) {
+          height = (height * maxSize) / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = (width * maxSize) / height;
+          height = maxSize;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });

@@ -1,22 +1,10 @@
 import React from "react";
-import { MapPin, Clock, CalendarDays, Heart } from "lucide-react";
+import { MapPin, Clock, CalendarDays } from "lucide-react";
 import { eventData } from "../mock";
 import Countdown from "./Countdown";
 import RsvpForm from "./RsvpForm";
+import Gallery from "./Gallery";
 import { FloralDivider, Sprig, Petals } from "./Ornaments";
-
-const PhotoPlaceholder = ({ label, className = "" }) => (
-  <div
-    className={`relative overflow-hidden rounded-sm border border-[#d8d0c1] bg-[#e4ded1] flex items-center justify-center ${className}`}
-  >
-    <div className="text-center px-4">
-      <Heart className="w-6 h-6 mx-auto text-[#b09a6b]" strokeWidth={1.2} />
-      <p className="font-sans-el text-[10px] tracking-[0.25em] uppercase text-[#8a8175] mt-2">
-        {label}
-      </p>
-    </div>
-  </div>
-);
 
 const Invitation = () => {
   return (
@@ -50,17 +38,8 @@ const Invitation = () => {
         </p>
       </section>
 
-      {/* PHOTOS placeholder strip */}
-      <section className="max-w-5xl mx-auto px-6 pb-8">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <PhotoPlaceholder label="Foto 1" className="aspect-[3/4]" />
-          <PhotoPlaceholder label="Foto 2" className="aspect-[3/4] mt-8" />
-          <PhotoPlaceholder label="Foto 3" className="aspect-[3/4]" />
-        </div>
-        <p className="text-center font-serif-el italic text-[#a89f90] text-sm mt-4">
-          (Vendos fotot tuaja këtu)
-        </p>
-      </section>
+      {/* PHOTO GALLERY */}
+      <Gallery />
 
       {/* COUNTDOWN */}
       <section className="py-16 px-6">
