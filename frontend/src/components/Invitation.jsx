@@ -3,6 +3,7 @@ import { MapPin, Clock, CalendarDays, Heart } from "lucide-react";
 import { eventData } from "../mock";
 import Countdown from "./Countdown";
 import RsvpForm from "./RsvpForm";
+import { FloralDivider, Sprig, Petals } from "./Ornaments";
 
 const PhotoPlaceholder = ({ label, className = "" }) => (
   <div
@@ -19,24 +20,29 @@ const PhotoPlaceholder = ({ label, className = "" }) => (
 
 const Invitation = () => {
   return (
-    <div className="w-full anim-fade-up">
+    <div className="w-full soft-in relative">
+      <Petals count={14} />
       {/* HERO */}
-      <section className="min-h-[92vh] flex flex-col items-center justify-center text-center px-6 py-20">
+      <section className="min-h-[92vh] flex flex-col items-center justify-center text-center px-6 py-20 relative">
         <p className="font-sans-el text-[11px] tracking-wide-lux uppercase text-[#8a8175] anim-fade-up">
           Bashkë përgjithmonë
         </p>
-        <h1 className="font-script text-7xl md:text-9xl text-[#2b2724] mt-6 leading-[0.85] anim-fade-up delay-1">
-          {eventData.groom}
-        </h1>
-        <span className="font-script text-4xl md:text-6xl text-[#b09a6b] my-2 anim-fade-up delay-2">
-          &amp;
-        </span>
-        <h1 className="font-script text-7xl md:text-9xl text-[#2b2724] leading-[0.85] anim-fade-up delay-2">
-          {eventData.bride}
-        </h1>
+        <div className="relative flex items-center justify-center mt-6 anim-fade-up delay-1">
+          <Sprig className="hidden md:block absolute -left-24 top-2 opacity-70" />
+          <div>
+            <h1 className="font-script text-7xl md:text-9xl text-[#2b2724] leading-[0.85]">
+              {eventData.groom}
+            </h1>
+            <span className="font-script text-4xl md:text-6xl gold-text block my-1">&amp;</span>
+            <h1 className="font-script text-7xl md:text-9xl text-[#2b2724] leading-[0.85]">
+              {eventData.bride}
+            </h1>
+          </div>
+          <Sprig flip className="hidden md:block absolute -right-24 top-2 opacity-70" />
+        </div>
 
-        <div className="divider-line w-56 mt-10 anim-fade-up delay-3" />
-        <p className="font-sans-el text-xs md:text-sm tracking-[0.3em] uppercase text-[#5c554c] mt-8 anim-fade-up delay-3">
+        <FloralDivider className="mt-10 anim-fade-up delay-3" />
+        <p className="font-sans-el text-xs md:text-sm tracking-[0.3em] uppercase text-[#5c554c] mt-6 anim-fade-up delay-3">
           {eventData.weekday} · {eventData.dateShort} · {eventData.time}
         </p>
         <p className="font-serif-el italic text-[#8a8175] mt-10 max-w-xl text-lg md:text-xl anim-fade-up delay-4">
@@ -67,17 +73,17 @@ const Invitation = () => {
       {/* DETAILS */}
       <section className="max-w-4xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center bg-[#faf8f3] border border-[#e2dccf] rounded-sm p-8">
+          <div className="text-center bg-[#faf8f3] border border-[#e2dccf] rounded-sm p-8 lift">
             <CalendarDays className="w-6 h-6 mx-auto text-[#b09a6b]" strokeWidth={1.2} />
             <h3 className="font-sans-el text-[11px] tracking-[0.25em] uppercase text-[#8a8175] mt-4">Data</h3>
             <p className="font-serif-el text-xl text-[#2b2724] mt-2">{eventData.dateHuman}</p>
           </div>
-          <div className="text-center bg-[#faf8f3] border border-[#e2dccf] rounded-sm p-8">
+          <div className="text-center bg-[#faf8f3] border border-[#e2dccf] rounded-sm p-8 lift">
             <Clock className="w-6 h-6 mx-auto text-[#b09a6b]" strokeWidth={1.2} />
             <h3 className="font-sans-el text-[11px] tracking-[0.25em] uppercase text-[#8a8175] mt-4">Ora</h3>
             <p className="font-serif-el text-xl text-[#2b2724] mt-2">{eventData.time}</p>
           </div>
-          <div className="text-center bg-[#faf8f3] border border-[#e2dccf] rounded-sm p-8">
+          <div className="text-center bg-[#faf8f3] border border-[#e2dccf] rounded-sm p-8 lift">
             <MapPin className="w-6 h-6 mx-auto text-[#b09a6b]" strokeWidth={1.2} />
             <h3 className="font-sans-el text-[11px] tracking-[0.25em] uppercase text-[#8a8175] mt-4">Vendi</h3>
             <p className="font-serif-el text-xl text-[#2b2724] mt-2">{eventData.venue}</p>
@@ -88,7 +94,7 @@ const Invitation = () => {
       {/* PROGRAM */}
       <section className="max-w-2xl mx-auto px-6 py-12">
         <h2 className="text-center font-script text-5xl text-[#2b2724] mb-2">Programi</h2>
-        <div className="divider-line w-32 mx-auto mb-10" />
+        <FloralDivider className="mb-10" />
         <div className="space-y-6">
           {eventData.program.map((p, i) => (
             <div key={i} className="flex items-center gap-6 justify-center">
@@ -103,7 +109,7 @@ const Invitation = () => {
       {/* LOCATION */}
       <section className="max-w-4xl mx-auto px-6 py-12">
         <h2 className="text-center font-script text-5xl text-[#2b2724] mb-2">Lokacioni</h2>
-        <div className="divider-line w-32 mx-auto mb-8" />
+        <FloralDivider className="mb-8" />
         <div className="rounded-sm overflow-hidden border border-[#e2dccf] shadow-sm">
           <iframe
             title="Lokacioni"
@@ -128,7 +134,7 @@ const Invitation = () => {
       {/* RSVP */}
       <section id="rsvp" className="max-w-xl mx-auto px-6 py-16">
         <h2 className="text-center font-script text-5xl text-[#2b2724] mb-2">Konfirmoni Pjesëmarrjen</h2>
-        <div className="divider-line w-32 mx-auto mb-4" />
+        <FloralDivider className="mb-4" />
         <p className="text-center font-serif-el italic text-[#8a8175] mb-10">
           Ju lutemi na bëni të ditur nese do të jeni pranë nesh
         </p>
