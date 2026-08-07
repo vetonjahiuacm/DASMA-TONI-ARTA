@@ -1,28 +1,28 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { MapPin, Clock, CalendarDays } from "lucide-react";
 import { eventData } from "../mock";
-import { fetchSeats } from "../api";
+import { fetchRsvps } from "../api";
 import Countdown from "./Countdown";
 import RsvpForm from "./RsvpForm";
 import Gallery from "./Gallery";
-import SeatCounter from "./SeatCounter";
+import Wishes from "./Wishes";
 import { FloralDivider, Sprig, Petals } from "./Ornaments";
 
 const Invitation = () => {
-  const [seats, setSeats] = useState(null);
+  const [wishes, setWishes] = useState([]);
 
-  const loadSeats = useCallback(async () => {
+  const loadWishes = useCallback(async () => {
     try {
-      const data = await fetchSeats();
-      setSeats(data);
+      const rsvps = await fetchRsvps();
+      setWishes(rsvps.filter((r) => r.message && r.message.trim().length > 0));
     } catch (e) {
       // silent
     }
   }, []);
 
   useEffect(() => {
-    loadSeats();
-  }, [loadSeats]);
+    loadWishes();
+  }, [loadWishes]);
 
   return (
     <div className="w-full soft-in relative">
@@ -58,15 +58,12 @@ const Invitation = () => {
       {/* PHOTO GALLERY */}
       <Gallery />
 
-      {/* COUNTDOWN + SEATS */}
+      {/* COUNTDOWN */}
       <section className="py-16 px-6">
         <p className="text-center font-sans-el text-[11px] tracking-wide-lux uppercase text-[#8a8175] mb-8">
           Numratori deri në ditën e madhe
         </p>
         <Countdown />
-        <div className="mt-14">
-          <SeatCounter seats={seats} />
-        </div>
       </section>
 
       {/* DETAILS */}
@@ -137,8 +134,11 @@ const Invitation = () => {
         <p className="text-center font-serif-el italic text-[#8a8175] mb-10">
           Ju lutemi na bëni të ditur nese do të jeni pranë nesh
         </p>
-        <RsvpForm onSubmitted={(s) => setSeats(s)} />
+        <RsvpForm onSubmitted={() => loadWishes()} />
       </section>
+
+      {/* WISHES WALL */}
+      <Wishes wishes={wishes} />
 
       {/* FOOTER */}
       <footer className="text-center py-12 px-6 border-t border-[#e2dccf]">

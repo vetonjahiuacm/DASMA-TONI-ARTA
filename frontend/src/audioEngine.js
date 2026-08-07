@@ -1,5 +1,7 @@
 // Soft romantic ambient music generated with the Web Audio API.
-// No external files, no copyright — a gentle looping piano-like arpeggio.
+// If the couple places a song in src/assets/music, that song plays instead.
+
+import { getCustomTrack } from "./musicSource";
 
 class AmbientMusic {
   constructor() {
@@ -10,6 +12,11 @@ class AmbientMusic {
     this.timer = null;
     this.step = 0;
     this.tempo = 2.0; // seconds per note (slow & dreamy)
+
+    // custom song support
+    this.audioEl = null;
+    this.usingCustom = false;
+    this.fadeTimer = null;
 
     // I–V–vi–IV progression in C major, arpeggiated (frequencies in Hz)
     this.progression = [
@@ -89,12 +96,46 @@ class AmbientMusic {
     this.timer = setTimeout(() => this._schedule(), this.tempo * 1000);
   }
 
+  _fadeAudio(el, from, to, ms, onDone) {
+    if (this.fadeTimer) clearInterval(this.fadeTimer);
+    const steps = 24;
+    let i = 0;
+    el.volume = from;
+    this.fadeTimer = setInterval(() => {
+      i++;
+      el.volume = Math.max(0, Math.min(1, from + (to - from) * (i / steps)));
+      if (i >= steps) {
+        clearInterval(this.fadeTimer);
+        this.fadeTimer = null;
+        if (onDone) onDone();
+      }
+    }, ms / steps);
+  }
+
   start() {
+    // Prefer the couple's custom song if present
+    const track = getCustomTrack();
+    if (track) {
+      if (!this.audioEl) {
+        this.audioEl = new Audio(track);
+        this.audioEl.loop = true;
+        this.audioEl.preload = "auto";
+      }
+      this.usingCustom = true;
+      this.playing = true;
+      const el = this.audioEl;
+      el.volume = 0;
+      const p = el.play();
+      if (p && p.catch) p.catch(() => {});
+      this._fadeAudio(el, 0, 0.5, 2500);
+      return;
+    }
+
+    // Fallback: generated ambient melody
     this._ensure();
     if (this.ctx.state === "suspended") this.ctx.resume();
     if (this.playing) return;
     this.playing = true;
-    // fade in
     const t = this.ctx.currentTime;
     this.master.gain.cancelScheduledValues(t);
     this.master.gain.setValueAtTime(0.0001, t);
@@ -103,6 +144,12 @@ class AmbientMusic {
   }
 
   stop() {
+    if (this.usingCustom && this.audioEl) {
+      this.playing = false;
+      const el = this.audioEl;
+      this._fadeAudio(el, el.volume, 0, 900, () => el.pause());
+      return;
+    }
     if (!this.ctx || !this.playing) return;
     this.playing = false;
     if (this.timer) clearTimeout(this.timer);
