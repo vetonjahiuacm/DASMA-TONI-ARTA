@@ -148,12 +148,12 @@ def test_rsvp_create_accepting():
         initial_remaining = initial_seats['remaining']
         initial_accepted = initial_seats['acceptedCount']
         
-        # Create RSVP
+        # Create RSVP with real Albanian data as per review request
         payload = {
-            "name": "Test Guest 1",
+            "name": "Ariana Krasniqi",
             "attending": "yes",
-            "guests": 3,
-            "message": "Urime!"
+            "guests": 2,
+            "message": "Urime të përzemërta!"
         }
         
         response = requests.post(f"{API_URL}/rsvp", json=payload, timeout=10)
@@ -181,27 +181,27 @@ def test_rsvp_create_accepting():
                         f"RSVP fields: {list(rsvp.keys())}")
             
             # Verify guests count
-            if rsvp['guests'] == 3:
+            if rsvp['guests'] == 2:
                 log_test("RSVP guests count is correct", True, f"guests={rsvp['guests']}")
             else:
                 log_test("RSVP guests count is correct", False, 
-                        f"Expected 3, got {rsvp['guests']}")
+                        f"Expected 2, got {rsvp['guests']}")
             
             # Verify seat changes
-            expected_confirmed = initial_confirmed + 3
+            expected_confirmed = initial_confirmed + 2
             if seats['confirmedGuests'] == expected_confirmed:
-                log_test("Confirmed guests increased by 3", True, 
+                log_test("Confirmed guests increased by 2", True, 
                         f"Before: {initial_confirmed}, After: {seats['confirmedGuests']}")
             else:
-                log_test("Confirmed guests increased by 3", False, 
+                log_test("Confirmed guests increased by 2", False, 
                         f"Expected {expected_confirmed}, got {seats['confirmedGuests']}")
             
-            expected_remaining = initial_remaining - 3
+            expected_remaining = initial_remaining - 2
             if seats['remaining'] == expected_remaining:
-                log_test("Remaining seats decreased by 3", True, 
+                log_test("Remaining seats decreased by 2", True, 
                         f"Before: {initial_remaining}, After: {seats['remaining']}")
             else:
-                log_test("Remaining seats decreased by 3", False, 
+                log_test("Remaining seats decreased by 2", False, 
                         f"Expected {expected_remaining}, got {seats['remaining']}")
             
             expected_accepted = initial_accepted + 1
@@ -236,9 +236,9 @@ def test_rsvp_create_declining():
         initial_confirmed = initial_seats['confirmedGuests']
         initial_declined = initial_seats['declinedCount']
         
-        # Create declining RSVP
+        # Create declining RSVP with real Albanian name as per review request
         payload = {
-            "name": "Test Guest 2",
+            "name": "Bekim Berisha",
             "attending": "no",
             "guests": 0,
             "message": ""
@@ -294,9 +294,9 @@ def test_rsvp_optional_message():
     
     try:
         payload = {
-            "name": "Test Guest 3",
+            "name": "Luan Hoxha",
             "attending": "yes",
-            "guests": 2
+            "guests": 1
             # message field intentionally omitted
         }
         
@@ -429,32 +429,60 @@ def test_rsvps_list():
 def test_email_handling():
     """Test 9: Verify email sending is skipped gracefully when not configured"""
     print("\n" + "="*70)
-    print("TEST 9: Email Handling (SendGrid Not Configured)")
+    print("TEST 9: Email Handling (SMTP/SendGrid Not Configured)")
     print("="*70)
     
-    # This is verified by checking that RSVP creation succeeds even without SendGrid config
-    # We already tested RSVP creation in previous tests, so we just verify the behavior
+    # This verifies that RSVP creation succeeds even without email config
+    # and that the warning is logged (not an exception/traceback)
     
     try:
-        # Check backend logs for email skip message
+        # Check backend error logs for the new warning message format
         import subprocess
         result = subprocess.run(
-            ['tail', '-n', '50', '/var/log/supervisor/backend.out.log'],
+            ['tail', '-n', '100', '/var/log/supervisor/backend.err.log'],
             capture_output=True,
             text=True,
             timeout=5
         )
         
-        if 'SendGrid not configured' in result.stdout or 'email skipped' in result.stdout:
-            log_test("Email sending skipped gracefully when not configured", True, 
-                    "Found 'SendGrid not configured' or 'email skipped' in logs")
+        # Look for the new warning message from the refactored code
+        new_warning = "No email transport configured (SMTP/SendGrid) - email skipped"
+        has_warning = new_warning in result.stdout
+        
+        # Check for exceptions/tracebacks (should NOT be present)
+        has_exception = "Traceback" in result.stdout or "Exception" in result.stdout
+        has_error = "ERROR" in result.stdout and "email" in result.stdout.lower()
+        
+        if has_warning and not has_exception and not has_error:
+            log_test("Email skipped gracefully with warning (no exception)", True, 
+                    f"Found warning message in logs, no exceptions/errors")
+        elif has_warning:
+            if has_exception or has_error:
+                log_test("Email skipped gracefully with warning (no exception)", False, 
+                        f"Warning found but also found exception/error in logs")
+            else:
+                log_test("Email skipped gracefully with warning (no exception)", True, 
+                        f"Warning found, no exceptions")
         else:
-            # Even if not in logs, if RSVPs were created successfully, it's working
-            log_test("Email sending does not block RSVP creation", True, 
-                    "RSVPs created successfully despite missing SendGrid config")
+            # Check if RSVPs were created successfully (which means email didn't block)
+            rsvps_response = requests.get(f"{API_URL}/rsvps", timeout=10)
+            if rsvps_response.status_code == 200 and len(rsvps_response.json()) > 0:
+                log_test("Email does not block RSVP creation", True, 
+                        f"RSVPs created successfully (warning may be in earlier logs)")
+            else:
+                log_test("Email handling verification", False, 
+                        f"Could not verify email handling in logs")
+        
+        # Additional check: verify no email-related errors in recent logs
+        if has_exception or has_error:
+            print(f"\n⚠️  Warning: Found email-related exception/error in logs")
+            print(f"   This may indicate email sending is not failing gracefully")
+        else:
+            print(f"\n✓ No email-related exceptions found in logs")
+            
     except Exception as e:
-        # If we can't check logs, but RSVPs worked, that's still a pass
-        log_test("Email sending does not block RSVP creation", True, 
+        # If we can't check logs, but RSVPs worked, that's still acceptable
+        log_test("Email does not block RSVP creation", True, 
                 f"RSVPs created successfully (log check failed: {str(e)})")
 
 def verify_final_seat_math():

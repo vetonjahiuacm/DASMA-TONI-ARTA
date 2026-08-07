@@ -116,6 +116,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Root endpoint returns JSON message correctly. Response: {'message': 'Ftesa Vetoni & Arta API'}"
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. Root endpoint still working correctly. Returns JSON message as expected."
 
   - task: "Seats endpoint (GET /api/seats)"
     implemented: true
@@ -128,6 +131,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Seats endpoint returns all required fields (total, confirmedGuests, remaining, acceptedCount, declinedCount, totalResponses). Total seats correctly set to 80. Seat math verified: remaining = total - confirmedGuests. Response counts consistent: totalResponses = acceptedCount + declinedCount."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. Seats endpoint working correctly. All required fields present. Total=80, seat math correct (remaining = total - confirmedGuests), response counts consistent (totalResponses = acceptedCount + declinedCount)."
 
   - task: "Create RSVP - Accepting (POST /api/rsvp with attending=yes)"
     implemented: true
@@ -140,6 +146,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ RSVP creation with attending=yes works correctly. Response contains both rsvp and seats objects. RSVP has id and createdAt fields. Guest count correctly stored (3 guests). Seat calculations correct: confirmedGuests increased by 3, remaining decreased by 3, acceptedCount increased by 1."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. RSVP creation with attending=yes works correctly. Tested with real data: name='Ariana Krasniqi', guests=2, message='Urime të përzemërta!'. Request returns 200 (success) even though email is skipped (no SMTP/SendGrid configured). Response contains rsvp (with id, createdAt) and seats objects. Seat math correct: confirmedGuests +2, remaining -2, acceptedCount +1. Background email task does NOT cause 500 error."
 
   - task: "Create RSVP - Declining (POST /api/rsvp with attending=no)"
     implemented: true
@@ -152,6 +161,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ RSVP creation with attending=no works correctly. Guests correctly set to 0 for declining RSVPs. DeclinedCount increased by 1. ConfirmedGuests unchanged (as expected)."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. RSVP declining works correctly. Tested with name='Bekim Berisha', attending='no', guests=0. Request returns 200 (success). Stored with guests=0, declinedCount +1, confirmedGuests unchanged. Email skipped gracefully without causing failure."
 
   - task: "RSVP optional message field"
     implemented: true
@@ -164,6 +176,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ RSVP creation works correctly when message field is omitted. Message field is properly optional."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. RSVP creation with attending='yes' and NO message field works correctly. Request returns 200 (success). Message field is properly optional."
 
   - task: "RSVP validation - empty name"
     implemented: true
@@ -176,6 +191,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Empty name validation works correctly. Returns 400 error with message: 'Emri është i detyrueshëm'"
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. Empty name validation still working correctly. Returns 400 error as expected."
 
   - task: "RSVP validation - invalid attending value"
     implemented: true
@@ -188,6 +206,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Invalid attending value validation works correctly. Returns 422 error when attending is not 'yes' or 'no' (tested with 'maybe')."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. Invalid attending value validation still working correctly. Returns 422 error when attending='maybe'."
 
   - task: "List RSVPs (GET /api/rsvps)"
     implemented: true
@@ -200,6 +221,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ RSVPs list endpoint works correctly. Returns list of all RSVPs. Each RSVP has all required fields: id, name, attending, guests, message, createdAt. RSVPs correctly sorted by createdAt in descending order (newest first)."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. RSVPs list endpoint still working correctly. Returns list sorted by createdAt desc. All required fields present: id, name, attending, guests, message, createdAt."
 
   - task: "Email handling (SendGrid integration)"
     implemented: true
@@ -212,6 +236,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Email handling works correctly. RSVP creation succeeds even when SendGrid is not configured (SENDGRID_API_KEY is empty). Email sending is properly handled in background tasks and does not block RSVP creation. This is the expected behavior per requirements."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification system refactor. Email handling works correctly with new implementation. SMTP_USER/SMTP_PASSWORD and SENDGRID keys are empty (intentionally not configured). Emails are skipped gracefully WITHOUT causing request failure. Backend logs show warning: 'No email transport configured (SMTP/SendGrid) - email skipped, RSVP still saved.' NO exceptions or tracebacks found in logs. RSVP creation succeeds (200) even though email is skipped. Background email task does not cause 500 error. Refactored code now tries SMTP first, then falls back to SendGrid, then logs warning if neither configured."
 
   - task: "Seat math consistency"
     implemented: true
@@ -224,6 +251,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ All seat calculations are mathematically correct and consistent. Verified: remaining = total - confirmedGuests, totalResponses = acceptedCount + declinedCount. Final test state: Total=80, ConfirmedGuests=5, Remaining=75, Accepted=2, Declined=1, TotalResponses=3."
+      - working: true
+        agent: "testing"
+        comment: "✅ Re-tested after email/notification refactor. All seat calculations remain mathematically correct and consistent. Verified: remaining = total - confirmedGuests, totalResponses = acceptedCount + declinedCount. Final test state: Total=80, ConfirmedGuests=3, Remaining=77, Accepted=2, Declined=1, TotalResponses=3. No regressions in seat math after refactor."
 
 frontend:
   - task: "Frontend testing not performed"
@@ -241,13 +271,13 @@ frontend:
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
-  last_updated: "2026-08-06T19:18:05Z"
+  last_updated: "2026-08-07T09:22:00Z"
 
 test_plan:
   current_focus:
-    - "All backend API endpoints tested and verified"
+    - "All backend API endpoints re-tested after email/notification refactor - no regressions found"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -255,3 +285,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Completed comprehensive backend API testing for Wedding RSVP system. All 22 tests passed (100% success rate). Tested: root endpoint, seats endpoint with math verification, RSVP creation (accepting/declining), optional fields, validation (empty name, invalid attending value), RSVP list with sorting, email handling without SendGrid config, and final seat math consistency. All endpoints working correctly. TOTAL_SEATS correctly configured to 80. Seat calculations are accurate. Email sending properly handled in background without blocking RSVP creation."
+  - agent: "testing"
+    message: "Re-tested all backend APIs after email/notification system refactor. All 22 tests passed (100% success rate). NO REGRESSIONS introduced by the refactor. Key findings: (1) Email transport (SMTP/SendGrid) intentionally NOT configured - SMTP_USER/SMTP_PASSWORD and SENDGRID keys are empty. (2) Emails skipped gracefully WITHOUT causing request failure - all RSVP creation requests return 200 (success). (3) Backend logs show proper warning: 'No email transport configured (SMTP/SendGrid) - email skipped, RSVP still saved.' (4) NO exceptions or tracebacks in logs - email handling fails gracefully. (5) Background email task does NOT cause 500 errors. (6) Seat math remains correct after refactor: remaining = total - confirmedGuests; totalResponses = acceptedCount + declinedCount. (7) Tested with real Albanian names and messages as specified in review request. Refactored implementation now tries SMTP first, falls back to SendGrid, then logs warning if neither configured. All functionality working end-to-end."
