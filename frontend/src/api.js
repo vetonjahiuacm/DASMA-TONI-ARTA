@@ -1,21 +1,31 @@
 import axios from "axios";
 
 const BACKEND_URL =
-  process.env.REACT_APP_BACKEND_URL || "https://api.vetoniartadasme.site";
+  process.env.REACT_APP_BACKEND_URL ||
+  "https://vetoniartadasme.site";
 
-const API = ${BACKEND_URL}/api;
+const API = BACKEND_URL + "/api";
 
-export const submitRsvp = async (data) => {
-  const res = await axios.post(`${API}/rsvp`, data);
-  return res.data;
-};
+export function submitRsvp(data) {
+  return axios
+    .post(API + "/rsvp", data)
+    .then(function (response) {
+      return response.data;
+    });
+}
 
-export const fetchRsvps = async () => {
-  const res = await axios.get(`${API}/rsvps`);
-  return res.data;
-};
+export function fetchRsvps() {
+  return axios
+    .get(API + "/rsvps")
+    .then(function (response) {
+      return response.data;
+    });
+}
 
-export const fetchSeats = async () => {
-  const res = await axios.get(`${API}/seats`);
-  return res.data;
-};
+export function fetchSeats() {
+  return axios
+    .get(API + "/seats")
+    .then(function (response) {
+      return response.data;
+    });
+}
