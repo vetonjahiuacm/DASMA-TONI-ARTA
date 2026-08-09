@@ -1,48 +1,58 @@
 import emailjs from "@emailjs/browser";
 
-const SERVICE_ID = "service_5lthul6";
+const SERVICE_ID = "service_5ithul6";
 const TEMPLATE_ID = "template_o8r5683";
 const PUBLIC_KEY = "o0sDT0GCLxynbkP42";
 
 export async function submitRsvp(data) {
-  const templateParams = {
-    name: data?.name || "",
-    attending:
-      data?.attending === "yes"
-        ? "PO - Do të vij"
-        : "JO - Nuk mund të vij",
-    guests:
-      data?.attending === "yes"
-        ? Number(data?.guests || 0)
-        : 0,
-    message: data?.message || "",
-  };
+  const attending =
+    data.attending === "yes"
+      ? "PO VJIN"
+      : "NUK MUND TË VIJ";
 
-  console.log("RSVP DATA:", templateParams);
+  const guests =
+    data.attending === "yes"
+      ? Number(data.guests || 0)
+      : 0;
+
+  const templateParams = {
+    name: data.name || "",
+    attending: attending,
+
+    status_text:
+      data.attending === "yes"
+        ? "Do të jetë pranë jush"
+        : "Nuk mund të jetë pranë jush",
+
+    guests: guests,
+
+    message: data.message || "",
+
+    // Nëse këto vlera vijnë nga backend-i,
+    // mund t'i zëvendësosh më vonë.
+    acceptedCount: data.acceptedCount ?? 0,
+    declinedCount: data.declinedCount ?? 0,
+    confirmedGuests: data.confirmedGuests ?? guests,
+    remaining: data.remaining ?? Math.max(0, 80 - guests)
+  };
 
   try {
     const result = await emailjs.send(
       SERVICE_ID,
       TEMPLATE_ID,
       templateParams,
-      {
-        publicKey: PUBLIC_KEY,
-      }
+      PUBLIC_KEY
     );
 
-    console.log("EMAILJS SUCCESS:", result);
+    console.log("EmailJS SUCCESS:", result);
 
     return {
       success: true,
-      seats: null,
+      seats: null
     };
   } catch (error) {
-    console.error("EMAILJS ERROR:", error);
-
-    return {
-      success: false,
-      error: error,
-    };
+    console.error("EmailJS ERROR:", error);
+    throw error;
   }
 }
 
@@ -57,6 +67,6 @@ export async function fetchSeats() {
     remaining: 80,
     acceptedCount: 0,
     declinedCount: 0,
-    totalResponses: 0,
+    totalResponses: 0
   };
 }
