@@ -18,9 +18,9 @@ export const eventData = {
     "Dashuria nuk shihet me sy, por me zemër. Na nderoni me praninë tuaj në ditën më të bukur të jetës sonë.",
   program: [
     { time: "19:00", label: "Pritja e mysafirëve" },
-    { time: "19:30", label: "Ardhja e çiftit" },
-    { time: "20:00", label: "Darka festive" },
-    { time: "22:00", label: "Muzikë & vallëzim" },
+    { time: "21:00", label: "Ardhja e çiftit" },
+    { time: "22:00", label: "Darka festive" },
+    { time: "22:30", label: "Muzikë & vallëzim" },
   ],
 };
 
