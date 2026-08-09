@@ -1,6 +1,6 @@
 import emailjs from "@emailjs/browser";
 
-const SERVICE_ID = "service_5ithul6";
+const SERVICE_ID = "service_5lthul6";
 const TEMPLATE_ID = "template_o8r5683";
 const PUBLIC_KEY = "o0sDT0GCLxynbkP42";
 
@@ -18,10 +18,10 @@ export async function submitRsvp(data) {
     message: data?.message || "",
   };
 
-  try {
-    console.log("Sending RSVP:", templateParams);
+  console.log("RSVP DATA:", templateParams);
 
-    const response = await emailjs.send(
+  try {
+    const result = await emailjs.send(
       SERVICE_ID,
       TEMPLATE_ID,
       templateParams,
@@ -30,14 +30,14 @@ export async function submitRsvp(data) {
       }
     );
 
-    console.log("EmailJS SUCCESS:", response);
+    console.log("EMAILJS SUCCESS:", result);
 
     return {
       success: true,
       seats: null,
     };
   } catch (error) {
-    console.error("EmailJS ERROR:", error);
+    console.error("EMAILJS ERROR:", error);
 
     return {
       success: false,
