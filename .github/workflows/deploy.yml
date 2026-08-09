@@ -28,12 +28,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
         working-directory: frontend
         run: npm install --legacy-peer-deps
+
+      - name: Fix AJV dependencies
+        working-directory: frontend
+        run: |
+          npm install ajv@8 ajv-keywords@5 --save-exact --legacy-peer-deps
+
+      - name: Create required music directory
+        run: |
+          mkdir -p frontend/src/assets/music
+          touch frontend/src/assets/music/.gitkeep
 
       - name: Build React application
         working-directory: frontend
@@ -43,7 +51,8 @@ jobs:
         run: npm run build
 
       - name: Create SPA fallback
-        run: cp frontend/build/index.html frontend/build/404.html
+        run: |
+          cp frontend/build/index.html frontend/build/404.html
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -63,6 +72,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
