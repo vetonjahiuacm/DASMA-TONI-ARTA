@@ -19,11 +19,15 @@ export async function submitRsvp(data) {
   };
 
   try {
+    console.log("Sending RSVP:", templateParams);
+
     const response = await emailjs.send(
       SERVICE_ID,
       TEMPLATE_ID,
       templateParams,
-      PUBLIC_KEY
+      {
+        publicKey: PUBLIC_KEY,
+      }
     );
 
     console.log("EmailJS SUCCESS:", response);
