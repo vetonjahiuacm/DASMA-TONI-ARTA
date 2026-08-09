@@ -43,8 +43,7 @@ jobs:
         run: npm run build
 
       - name: Create SPA fallback
-        run: |
-          cp frontend/build/index.html frontend/build/404.html
+        run: cp frontend/build/index.html frontend/build/404.html
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -64,6 +63,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy website
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
