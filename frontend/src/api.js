@@ -1,10 +1,33 @@
+import axios from "axios";
 import emailjs from "@emailjs/browser";
 
-const SERVICE_ID = "service_5lthul6";
-const TEMPLATE_ID = "__ejs-test-mail-service__";
-const PUBLIC_KEY = "o0sDT0GCLXynbkP42";
+// ===============================
+// BACKEND
+// ===============================
+
+const BACKEND_URL =
+  process.env.REACT_APP_BACKEND_URL ||
+  "https://vetoniartadasme.site";
+
+const API = BACKEND_URL + "/api";
+
+// ===============================
+// EMAILJS
+// ===============================
+
+const SERVICE_ID = "service_5ithul6";
+const TEMPLATE_ID = "_ejs-test-mail-service_";
+const PUBLIC_KEY = "o0sDT0GCLxynbkP42";
+
+// ===============================
+// RSVP - SAVE + EMAIL
+// ===============================
 
 export async function submitRsvp(data) {
+  // 1. Ruaje RSVP në backend
+  const response = await axios.post(API + "/rsvp", data);
+
+  // 2. Dërgo email përmes EmailJS
   try {
     await emailjs.send(
       SERVICE_ID,
@@ -20,9 +43,34 @@ export async function submitRsvp(data) {
       }
     );
 
-    return { success: true };
+    console.log("EmailJS: email sent successfully");
   } catch (error) {
     console.error("EmailJS error:", error);
-    return { success: false, error };
   }
+
+  return response.data;
+}
+
+// ===============================
+// GET ALL RSVPS
+// ===============================
+
+export function fetchRsvps() {
+  return axios
+    .get(API + "/rsvps")
+    .then(function (response) {
+      return response.data;
+    });
+}
+
+// ===============================
+// GET SEATS
+// ===============================
+
+export function fetchSeats() {
+  return axios
+    .get(API + "/seats")
+    .then(function (response) {
+      return response.data;
+    });
 }
