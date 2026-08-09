@@ -1,35 +1,35 @@
 import emailjs from "@emailjs/browser";
 
-const SERVICE_ID = "service_5lthul6";
-const TEMPLATE_ID = "template_o8r5683";
+const SERVICE_ID = "service_5ithul6";
+const TEMPLATE_ID = "_ejs-test-mail-service_";
 const PUBLIC_KEY = "o0sDT0GCLxynbkP42";
 
 export async function submitRsvp(data) {
-  try {
-    var templateParams = {
-      name: data && data.name ? data.name : "",
-      attending: data && data.attending ? data.attending : "",
-      guests: data && data.guests ? data.guests : 0,
-      message: data && data.message ? data.message : ""
-    };
+  const templateParams = {
+    name: data.name || "",
+    attending: data.attending === "yes" ? "PO - Do të vij" : "JO - Nuk mund të vij",
+    guests: data.attending === "yes" ? Number(data.guests || 0) : 0,
+    message: data.message || ""
+  };
 
-    await emailjs.send(
+  try {
+    const result = await emailjs.send(
       SERVICE_ID,
       TEMPLATE_ID,
       templateParams,
       PUBLIC_KEY
     );
 
-    return {
-      success: true
-    };
-  } catch (error) {
-    console.error("EmailJS error:", error);
+    console.log("EmailJS SUCCESS:", result);
 
     return {
-      success: false,
-      error: error && error.text ? error.text : "Email sending failed"
+      success: true,
+      seats: null
     };
+  } catch (error) {
+    console.error("EmailJS ERROR:", error);
+
+    throw error;
   }
 }
 
