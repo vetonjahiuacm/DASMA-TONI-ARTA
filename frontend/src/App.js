@@ -10,7 +10,7 @@ import { Toaster } from "./components/ui/sonner";
 function App() {
   return (
     <div className="App paper-bg">
-      <BrowserRouter basename="/DASMA-TONI-ARTA">
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin />} />
