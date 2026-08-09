@@ -1,29 +1,45 @@
 import emailjs from "@emailjs/browser";
 
-const SERVICE_ID = "service_5ithul6";
+const SERVICE_ID = "service_5lthul6";
 const TEMPLATE_ID = "template_o8r5683";
 const PUBLIC_KEY = "o0sDT0GCLxynbkP42";
 
 export async function submitRsvp(data) {
   const templateParams = {
-    name: data.name || "",
+    // Emri i personit
+    name: data?.name || "",
+
+    // Statusi
     attending:
-      data.attending === "yes"
-        ? "PO - DO TË VIJ"
-        : "JO - NUK MUND TË VIJ",
+      data?.attending === "yes"
+        ? "PO - Do të vij"
+        : "JO - Nuk mund të vij",
 
+    // Numri i personave
     guests:
-      data.attending === "yes"
-        ? String(data.guests || 0)
-        : "0",
+      data?.attending === "yes"
+        ? Number(data?.guests || 0)
+        : 0,
 
-    message: data.message || ""
+    // Mesazhi
+    message: data?.message || "",
+
+    // Informacione shtesë për template-in
+    event: "Ftesë Dasme Vetoni & Arta",
+    date: "22.08.2026",
+    time: "19:00",
+    location: "RESTAURANT LATA",
+
+    // Statistika
+    total_seats: "80"
   };
 
-  console.log("EMAILJS PARAMS:", templateParams);
+  console.log("=================================");
+  console.log("RSVP DATA:", templateParams);
+  console.log("=================================");
 
   try {
-    const response = await emailjs.send(
+    const result = await emailjs.send(
       SERVICE_ID,
       TEMPLATE_ID,
       templateParams,
@@ -32,7 +48,9 @@ export async function submitRsvp(data) {
       }
     );
 
-    console.log("EMAILJS SUCCESS:", response);
+    console.log("=================================");
+    console.log("EMAILJS SUCCESS:", result);
+    console.log("=================================");
 
     return {
       success: true,
@@ -40,13 +58,14 @@ export async function submitRsvp(data) {
     };
 
   } catch (error) {
+    console.error("=================================");
     console.error("EMAILJS ERROR:", error);
+    console.error("=================================");
 
-    throw new Error(
-      error?.text ||
-      error?.message ||
-      "EmailJS nuk mundi ta dërgojë email-in."
-    );
+    return {
+      success: false,
+      error: error
+    };
   }
 }
 
@@ -59,7 +78,6 @@ export async function fetchSeats() {
     total: 80,
     confirmedGuests: 0,
     remaining: 80,
-    confirmedGuests: 0,
     acceptedCount: 0,
     declinedCount: 0,
     totalResponses: 0
