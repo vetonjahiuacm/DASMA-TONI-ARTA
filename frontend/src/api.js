@@ -1,7 +1,7 @@
 import emailjs from "@emailjs/browser";
 
 const SERVICE_ID = "service_5ithul6";
-const TEMPLATE_ID = "_ejs-test-mail-service_";
+const TEMPLATE_ID = "template_o8r5683";
 const PUBLIC_KEY = "o0sDT0GCLxynbkP42";
 
 export async function submitRsvp(data) {
