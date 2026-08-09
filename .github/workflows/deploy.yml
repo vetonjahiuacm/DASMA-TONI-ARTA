@@ -38,9 +38,14 @@ jobs:
         working-directory: frontend
         run: npm install --legacy-peer-deps ajv@8.17.1 ajv-keywords@5.1.0
 
+      - name: Create required music directory
+        working-directory: frontend
+        run: mkdir -p src/assets/music
+
       - name: Build React application
         working-directory: frontend
         env:
+          CI: false
           PUBLIC_URL: /DASMA-TONI-ARTA
         run: npm run build
 
