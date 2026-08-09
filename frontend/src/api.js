@@ -1,85 +1,143 @@
-import emailjs from "@emailjs/browser";
+const RSVP_API_URL =
+  "https://EMRI-YT.vercel.app/api/send-rsvp";
 
-const SERVICE_ID = "service_5lthul6";
-const TEMPLATE_ID = "template_o8r5683";
-const PUBLIC_KEY = "o0sDT0GCLxynbkP42";
 
-export async function submitRsvp(data) {
-  const templateParams = {
-    // Emri i personit
-    name: data?.name || "",
+export async function submitRsvp(
+  data,
+  seats = {}
+) {
 
-    // Statusi
-    attending:
-      data?.attending === "yes"
-        ? "PO - Do të vij"
-        : "JO - Nuk mund të vij",
+  const payload = {
 
-    // Numri i personave
-    guests:
-      data?.attending === "yes"
-        ? Number(data?.guests || 0)
-        : 0,
+    rsvp: {
 
-    // Mesazhi
-    message: data?.message || "",
+      name:
+        data?.name || "",
 
-    // Informacione shtesë për template-in
-    event: "Ftesë Dasme Vetoni & Arta",
-    date: "22.08.2026",
-    time: "19:00",
-    location: "RESTAURANT LATA",
+      attending:
+        data?.attending === "yes"
+          ? "yes"
+          : "no",
 
-    // Statistika
-    total_seats: "80"
+      guests:
+        data?.attending === "yes"
+          ? Number(data?.guests || 0)
+          : 0,
+
+      message:
+        data?.message || ""
+
+    },
+
+    seats: {
+
+      total:
+        Number(seats?.total ?? 80),
+
+      confirmedGuests:
+        Number(
+          seats?.confirmedGuests ?? 0
+        ),
+
+      remaining:
+        Number(
+          seats?.remaining ?? 80
+        ),
+
+      acceptedCount:
+        Number(
+          seats?.acceptedCount ?? 0
+        ),
+
+      declinedCount:
+        Number(
+          seats?.declinedCount ?? 0
+        ),
+
+      totalResponses:
+        Number(
+          seats?.totalResponses ?? 0
+        )
+
+    }
+
   };
 
-  console.log("=================================");
-  console.log("RSVP DATA:", templateParams);
-  console.log("=================================");
 
-  try {
-    const result = await emailjs.send(
-      SERVICE_ID,
-      TEMPLATE_ID,
-      templateParams,
-      {
-        publicKey: PUBLIC_KEY
-      }
-    );
-
-    console.log("=================================");
-    console.log("EMAILJS SUCCESS:", result);
-    console.log("=================================");
-
-    return {
-      success: true,
-      seats: null
-    };
-
-  } catch (error) {
-    console.error("=================================");
-    console.error("EMAILJS ERROR:", error);
-    console.error("=================================");
+  if (!payload.rsvp.name.trim()) {
 
     return {
       success: false,
-      error: error
+      error: "Emri është i detyrueshëm"
     };
+
   }
-}
 
-export async function fetchRsvps() {
-  return [];
-}
 
-export async function fetchSeats() {
-  return {
-    total: 80,
-    confirmedGuests: 0,
-    remaining: 80,
-    acceptedCount: 0,
-    declinedCount: 0,
-    totalResponses: 0
-  };
+  try {
+
+    const response =
+      await fetch(
+        RSVP_API_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(payload)
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !result.success
+    ) {
+
+      throw new Error(
+        result.error ||
+        "Dërgimi dështoi"
+      );
+
+    }
+
+
+    return {
+
+      success: true,
+
+      seats:
+        seats || null
+
+    };
+
+
+  } catch (error) {
+
+    console.error(
+      "RSVP EMAIL ERROR:",
+      error
+    );
+
+
+    return {
+
+      success: false,
+
+      error:
+        error?.message ||
+        "Nuk u dërgua emaili."
+
+    };
+
+  }
+
 }
