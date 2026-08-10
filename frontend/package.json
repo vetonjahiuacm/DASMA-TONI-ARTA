@@ -1,3 +1,506 @@
+
+
+
+
+
+
+Me trego ta rregulloj kete gabim
+
+Po. Gabimi në foto është shumë i qartë: Vercel nuk po arrin ta lexojë frontend/package.json sepse JSON-i është i prishur.
+
+Mesazhi kryesor është:
+
+Expected ',' or '}' after property value in JSON at position 116
+
+Pra problemi është te:
+
+/vercel/path0/frontend/package.json
+
+Hapi 1 — Hape package.json
+Në GitHub:
+
+DASMA-TONI-ARTA → frontend → package.json
+
+Hape dhe kliko Edit ✏️.
+
+Hapi 2 — Kontrollo rreshtat e parë
+Duhet të jetë diçka e ngjashme me këtë:
+
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "craco build"
+  }
+}
+Shumë e rëndësishme: në JSON çdo property duhet të ndahet me presje.
+
+❌ Gabim:
+
+{
+  "name": "frontend"
+  "version": "0.1.0"
+}
+✅ Saktë:
+
+{
+  "name": "frontend",
+  "version": "0.1.0"
+}
+Hapi 3 — Më e sigurta
+Mos e ndrysho me hamendje.
+
+Nëse je në VPS, fut:
+
+cd /home/DASMA-TONI-ARTA/frontend
+cat package.json
+Pastaj kontrolloje automatikisht:
+
+python3 -m json.tool package.json
+Nëse është gabim, do të tregojë afërsisht:
+
+Expecting ',' delimiter: line X column Y
+Hapi 4 — Nëse ke jq
+Mund ta kontrollosh edhe me:
+
+jq . package.json
+Nëse del:
+
+parse error
+atëherë package.json është definitivisht invalid.
+
+Hapi 5 — Pasi ta rregullosh
+Në VPS:
+
+cd /home/DASMA-TONI-ARTA/frontend
+npm install
+npm run build
+Nëse build-i përfundon me sukses, bëj:
+
+git add frontend/package.json
+git commit -m "Fix frontend package.json"
+git push origin main
+Pastaj Vercel do ta bëjë deployment-in përsëri automatikisht.
+
+Por unë ta rregulloj saktë për ty
+Nga fotografia nuk mund ta shoh përmbajtjen e package.json, vetëm gabimin në pozicionin 116.
+
+Më dërgo këtu komplet përmbajtjen e:
+
+frontend/package.json
+ose nga VPS ekzekuto:
+
+cat /home/DASMA-TONI-ARTA/frontend/package.json
+dhe ma dërgo rezultatin.
+
+Unë ta kthej komplet package.json të rregulluar, gati për copy/paste, pa prekur pjesët e tjera të projektit.
+
+
+IMG_0B4AA016-1086-45C2-AED4-E93EDD8371CA.jpeg
+
+Po, tani shihet më qartë. Pjesa që ke fotografuar duket në rregull — presjet në dependencies që duken në foto janë korrekte.
+
+Por Vercel po raporton:
+
+Could not read /vercel/path0/frontend/package.json:
+Expected ',' or '}' after property value in JSON at position 116
+Kjo do të thotë se problemi është shumë afër fillimit të package.json, ose GitHub/Vercel po lexon një version tjetër të file-it.
+
+Bëje këtë kontroll direkt në GitHub
+Hape frontend/package.json, pastaj te fundi i faqes kliko Edit dhe mos ndrysho asgjë ende.
+
+Në fund duhet të ketë diçka të tillë:
+
+{
+  ...
+  "scripts": {
+    ...
+  },
+  "eslintConfig": {
+    ...
+  },
+  "browserslist": {
+    ...
+  }
+}
+Por dua ta kontrolloj komplet file-in, sepse fotografia tregon vetëm rreshtat 1–33 nga 143.
+
+Më e sigurta: më dërgo pjesën tjetër
+Bëj screenshot të package.json duke filluar nga rreshti 34 deri në fund, mundësisht në 2–3 fotografi.
+
+Ose, në VPS ekzekuto:
+
+cd /home/DASMA-TONI-ARTA/frontend
+python3 -m json.tool package.json
+Nëse jep gabim, ma dërgo rezultatin e komandës.
+
+Nëse nuk jep gabim dhe thotë/printon JSON-in, atëherë kontrollojmë pse GitHub/Vercel ka version tjetër.
+
+Gjithashtu kontrollo këtë
+Në GitHub, shiko te frontend/package.json nëse rreshti 5 është saktësisht:
+
+"dependencies": {
+dhe jo diçka si:
+
+"dependencies": {
+me ndonjë karakter të fshehur/prishur para tij.
+
+Mos e fshi ose zëvendëso package.json akoma. Dërgoma pjesën nga rreshti 34 deri në 143 dhe ta gjejmë saktësisht gabimin pa prishur projektin.
+
+
+{
+
+"name": "frontend",
+
+"version": "0.1.0",
+
+"private": true,
+
+"dependencies": {
+
+"@hookform/resolvers": "5.0.1",
+
+"@radix-ui/react-accordion": "1.2.8",
+
+"@radix-ui/react-alert-dialog": "1.1.11",
+
+"@radix-ui/react-aspect-ratio": "1.1.4",
+
+"@radix-ui/react-avatar": "1.1.7",
+
+"@radix-ui/react-checkbox": "1.2.3",
+
+"@radix-ui/react-collapsible": "1.1.8",
+
+"@radix-ui/react-context-menu": "2.2.12",
+
+"@radix-ui/react-dialog": "1.1.11",
+
+"@radix-ui/react-dropdown-menu": "2.1.12",
+
+"@radix-ui/react-hover-card": "1.1.11",
+
+"@radix-ui/react-label": "2.1.4",
+
+"@radix-ui/react-menubar": "1.1.12",
+
+"@radix-ui/react-navigation-menu": "1.2.10",
+
+"@radix-ui/react-popover": "1.1.11",
+
+"@radix-ui/react-progress": "1.1.4",
+
+"@radix-ui/react-radio-group": "1.3.4",
+
+"@radix-ui/react-scroll-area": "1.2.6",
+
+"@radix-ui/react-select": "2.2.2",
+
+"@radix-ui/react-separator": "1.1.4",
+
+"@radix-ui/react-slider": "1.3.2",
+
+"@radix-ui/react-slot": "1.2.0",
+
+"@radix-ui/react-switch": "1.2.2",
+
+"@radix-ui/react-tabs": "1.1.9",
+
+"@radix-ui/react-toast": "1.2.11",
+
+"@radix-ui/react-toggle": "1.1.6",
+
+"@radix-ui/react-toggle-group": "1.1.7",
+
+"@radix-ui/react-tooltip": "1.2.4",
+
+"@tanstack/react-query": "5.56.2",
+
+"@emailjs/browser": "^4.4.1",
+
+"axios": "1.18.0",
+
+"class-variance-authority": "0.7.1",
+
+"clsx": "2.1.1",
+
+"cmdk": "1.1.1",
+
+"cra-template": "1.2.0",
+
+"date-fns": "4.1.0",
+
+"dayjs": "1.11.13",
+
+"embla-carousel-react": "8.6.0",
+
+"framer-motion": "11.18.0",
+
+"input-otp": "1.4.2",
+
+"lodash": "4.18.1",
+
+"lucide-react": "0.516.0",
+
+"next-themes": "0.4.6",
+
+"react": "19.0.0",
+
+"react-day-picker": "8.10.1",
+
+"react-dom": "19.0.0",
+
+"react-hook-form": "7.56.2",
+
+"react-resizable-panels": "3.0.1",
+
+"react-router-dom": "7.15.0",
+
+"react-scripts": "5.0.1",
+
+"recharts": "3.6.0",
+
+"sonner": "2.0.3",
+
+"swr": "2.3.8",
+
+"tailwind-merge": "3.2.0",
+
+"tailwindcss-animate": "1.0.7",
+
+"vaul": "1.1.2",
+
+"zod": "3.24.4"
+
+},
+
+"scripts": {
+
+"start": "craco start",
+
+"build": "craco build",
+
+"test": "craco test"
+
+},
+
+"browserslist": {
+
+"production": [
+
+">0.2%",
+
+"not dead",
+
+"not op_mini all"
+
+],
+
+"development": [
+
+"last 1 chrome version",
+
+"last 1 firefox version",
+
+"last 1 safari version"
+
+]
+
+},
+
+"devDependencies": {
+
+"@babel/plugin-proposal-private-property-in-object": "7.21.11",
+
+"@craco/craco": "7.1.0",
+
+"@emergentbase/visual-edits": "https://assets.emergent.sh/npm/emergentbase-visual-edits-1.0.13.tgz",
+
+"@eslint/js": "9.23.0",
+
+"@types/lodash": "4.17.24",
+
+"autoprefixer": "10.4.20",
+
+"dotenv": "16.4.5",
+
+"eslint": "9.23.0",
+
+"eslint-plugin-import": "2.31.0",
+
+"eslint-plugin-jsx-a11y": "6.10.2",
+
+"eslint-plugin-react": "7.37.4",
+
+"eslint-plugin-react-hooks": "5.2.0",
+
+"globals": "15.15.0",
+
+"postcss": "8.5.10",
+
+"tailwindcss": "3.4.17"
+
+},
+
+"resolutions": {
+
+"react-router": "7.15.1",
+
+"node-forge": "1.4.0",
+
+"fast-uri": "3.1.2",
+
+"flatted": "3.4.2",
+
+"qs": "6.15.2",
+
+"diff": "4.0.4",
+
+"follow-redirects": "1.16.0",
+
+"path-to-regexp": "0.1.13",
+
+"rollup": "2.80.0",
+
+"underscore": "1.13.8",
+
+"@babel/plugin-transform-modules-systemjs": "7.29.4",
+
+"@eslint/plugin-kit": "0.3.4",
+
+"shell-quote": "1.9.0",
+
+"jsonpath": "1.3.0",
+
+"nth-check": "2.0.1",
+
+"serialize-javascript": "7.0.5",
+
+"uuid": "11.1.1",
+
+"@tootallnate/once": "2.0.1",
+
+"webpack-dev-server": "5.2.6",
+
+"resolve-url-loader": "5.0.0",
+
+"/resolve-url-loader/postcss": "8.5.10",
+
+"/axios/form-data": "4.0.6",
+
+"/jsdom/form-data": "3.0.5",
+
+"/postcss-svgo/svgo": "2.8.1",
+
+"/webpack-dev-server/ws": "8.21.0",
+
+"/postcss-load-config/yaml": "2.8.3",
+
+"/cosmiconfig/yaml": "1.10.3",
+
+"/cssnano/yaml": "1.10.3",
+
+"/eslint/js-yaml": "4.3.0",
+
+"/@eslint/eslintrc/js-yaml": "4.3.0",
+
+"/svgo/js-yaml": "3.15.0",
+
+"/@istanbuljs/load-nyc-config/js-yaml": "3.15.0",
+
+"/css-loader/postcss": "8.5.10",
+
+"/css-minimizer-webpack-plugin/postcss": "8.5.10",
+
+"/react-scripts/postcss": "8.5.10",
+
+"/filelist/minimatch": "5.1.8",
+
+"/anymatch/picomatch": "2.3.2",
+
+"/micromatch/picomatch": "2.3.2",
+
+"/readdirp/picomatch": "2.3.2",
+
+"/jest-util/picomatch": "2.3.2",
+
+"**/tinyglobby/picomatch": "4.0.4",
+
+"http-proxy-middleware": "2.0.10"
+
+},
+
+"packageManager": "yarn@1.22.22"
+
+} regullo
+
+
+Po — e gjeta problemin. Në tekstin që më dërgove ka disa pjesë që nuk janë JSON valid, sidomos te resolutions.
+
+P.sh. këto janë gabim:
+
+**"**/axios/form-data": "4.0.6",
+dhe:
+
+"packageManager": "yarn\@1.22.22"
+Unë ta rregullova komplet package.json dhe e validova si JSON.
+
+Shkarko versionin e rregulluar
+
+Tani bëj kështu në GitHub
+Hyr te:
+DASMA-TONI-ARTA
+
+Hyr te:
+frontend
+
+Hape:
+package.json
+
+Kliko Edit ✏️
+
+Fshije krejt përmbajtjen e vjetër.
+
+Hape file-in që të dhashë dhe kopjo krejt përmbajtjen.
+
+Ngjite në GitHub.
+
+Kliko Commit changes.
+
+Pastaj Vercel
+Pas commit-it Vercel duhet ta nisë deployment-in automatikisht.
+
+Nëse do ta bësh nga VPS para se ta shtysh në GitHub:
+
+cd /home/DASMA-TONI-ARTA/frontend
+python3 -m json.tool package.json
+Nëse gjithçka është në rregull, nuk duhet të marrësh Expecting ',' ose Expected ',' or '}'.
+
+Pastaj:
+
+npm install
+npm run build
+Nëse npm run build del me sukses:
+
+cd /home/DASMA-TONI-ARTA
+git add frontend/package.json
+git commit -m "Fix frontend package.json"
+git push origin main
+Mos ndrysho asgjë tjetër në projekt për momentin. Së pari rregullojmë këtë package.json; pastaj, nëse Vercel jep një gabim tjetër, ma dërgo screenshot-in dhe vazhdojmë hap pas hapi. 
+
+
+
+Library
+/
+package.json
+
+
 {
   "name": "frontend",
   "version": "0.1.0",
